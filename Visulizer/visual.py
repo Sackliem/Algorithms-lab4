@@ -52,17 +52,47 @@ def show_log_merge(log: list):
     dialog.exec_()
 
 
-
-def visualize(arr):
+def visualize(arr, highlight_index=None, compare_index=None):
     plt.clf()
-    plt.bar(range(len(arr)), arr, color='blue')
+
+    # Create a color list for bars
+    colors = ['blue' for _ in range(len(arr))]
+
+    if highlight_index is not None:
+        colors[highlight_index] = 'red'  # Current element being sorted
+    if compare_index is not None:
+        colors[compare_index] = 'purple'  # Element being compared
+
+    plt.bar(range(len(arr)), arr, color=colors)
+    plt.xlim(-1, len(arr))
+    plt.ylim(0, max(arr) + 1)
+    plt.title("Sorting Visualization")
+    plt.xlabel("Index")
+    plt.ylabel("Value")
+
+    plt.pause(0.5)
+
+
+def visualize_q(arr, pivot_index=None, current_index=None):
+    plt.clf()
+    colors = ['blue' for _ in range(len(arr))]
+
+    if pivot_index is not None:
+        colors[pivot_index] = 'black'
+        for i in range(len(arr)):
+            if arr[i] < arr[pivot_index]:
+                colors[i] = 'gray'
+
+    if current_index is not None:
+        colors[current_index] = 'red'
+
+    plt.bar(range(len(arr)), arr, color=colors)
     plt.xlim(-1, len(arr))
     plt.ylim(0, max(arr) + 1)
     plt.title("Sorting Visualization")
     plt.xlabel("Index")
     plt.ylabel("Value")
     plt.pause(0.5)
-
 
 def visualize_str(words):
     plt.clf()

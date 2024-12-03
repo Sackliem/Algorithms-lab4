@@ -13,17 +13,21 @@ def bubble_sort(arr, step):
     for i in range(n):
         for j in range(0, n - i - 1):
             comparisons_log.append((arr[j], arr[j + 1]))
+
             if arr[j] > arr[j + 1]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
                 swaps_log.append((j, j + 1))
-        if check and step == step_f:
-            visualize(arr)
-            step_f = 0
-        if keyboard.is_pressed('esc'):
-            check = False
-        step_f += 1
-    visualize(arr)
 
+            if check and step == step_f:
+                visualize(arr, j, j + 1)
+                step_f = 0
+
+            if keyboard.is_pressed('esc'):
+                check = False
+
+            step_f += 1
+
+    visualize(arr)  # Final visualization after sorting
     show_logs(comparisons_log, swaps_log)
 
     return arr

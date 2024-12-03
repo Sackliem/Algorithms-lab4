@@ -77,7 +77,8 @@ class SortVisualizer(QWidget):
             elif sort_method == "heapsort":
                 Heap_sort.heap_sort(data.copy(), step)
             elif sort_method == "quicksort":
-                QuickSort.sort_with_quick_sort(data.copy(), step)
+                arr = QuickSort.quicksort(data.copy(),step)
+                visualize_q(arr[0], arr[1], len(arr[0]) - 1)
             elif sort_method == 'textsort/radixSort':
                 tests.run_Radix(size)
             elif sort_method == 'textsort/selectSort':
