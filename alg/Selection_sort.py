@@ -1,39 +1,40 @@
-from Visulizer.visual import *
-import keyboard
+
+import matplotlib.pyplot as plt
 
 
-def selection_sort(arr, step):
-    check = True
-    step_f = 0
+def selection_sort(arr):
     n = len(arr)
-
-    comparisons_log = []
-    swaps_log = []
+    log = []  # Лог для записи шагов сортировки
 
     for i in range(n):
         min_idx = i
         for j in range(i + 1, n):
-            comparisons_log.append((arr[min_idx], arr[j]))
+            log.append((arr[:], i, min_idx, j))  # Логируем сравнение
             if arr[j] < arr[min_idx]:
                 min_idx = j
+                log.append((arr[:], i, min_idx, j))  # Логируем выбор нового минимального элемента
 
-        if min_idx != i:
-            arr[i], arr[min_idx] = arr[min_idx], arr[i]
-            swaps_log.append((i, min_idx))
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+        log.append((arr[:], i, min_idx, -1))  # Логируем обмен
 
-        if check and step == step_f:
-            visualize(arr)
-            step_f = 0
+    return arr, log
 
-        if keyboard.is_pressed('esc'):
-            check = False
 
-        step_f += 1
+def visualize_selection_sort(log):
+    for state, i, min_idx, j in log:
+        colors = [
+            "green" if x == i else
+            "red" if x == min_idx else
+            "purple" if x == j else
+            "blue"
+            for x in range(len(state))
+        ]
+        plt.bar(range(len(state)), state, color=colors)
+        plt.pause(0.3)
+        plt.clf()
 
-    visualize(arr)
 
-    show_logs(comparisons_log, swaps_log)
 
-    return arr
+
 
 

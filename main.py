@@ -2,10 +2,11 @@ import sys
 from Visulizer.visual import *
 
 from alg import Bable_Sort, Heap_sort, QuickSort, Selection_sort
+from TextSort import RadixSort, SelectionSort, BaseSort
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QComboBox, QLineEdit, QFileDialog
 from random import randint
 from threading import *
-from TextSort import tests
+from ExternalSort.NaturalSort import NaturalMergeSort
 
 
 class SortVisualizer(QWidget):
@@ -71,26 +72,47 @@ class SortVisualizer(QWidget):
             plt.ion()
 
             if sort_method == "bubble":
-                Bable_Sort.bubble_sort(data.copy(), step)
+                _, log = Bable_Sort.bubble_sort(data.copy())
+                plt.figure(figsize=(10, 5))
+                Bable_Sort.visualize_bubble_sort(log)
+                plt.show()
+                show_log_merge(log)
             elif sort_method == "selection":
-                Selection_sort.selection_sort(data.copy(), step)
+                sorted_arr, log = Selection_sort.selection_sort(data.copy())
+                plt.figure(figsize=(10, 5))
+                Selection_sort.visualize_selection_sort(log)
+                plt.show()
+                show_log_selection_sort(log)
             elif sort_method == "heapsort":
-                Heap_sort.heap_sort(data.copy(), step)
+                log = Heap_sort.heapsort(data.copy())
+                plt.figure(figsize=(10, 5))
+                Heap_sort.visualize_heapsort(log)
+                plt.show()
+                show_log_heapsort(log)
             elif sort_method == "quicksort":
-                arr = QuickSort.quicksort(data.copy(),step)
-                visualize_q(arr[0], arr[1], len(arr[0]) - 1)
+                log = []
+                QuickSort.quicksort(data.copy(), 0, len(data) - 1, log)
+                plt.figure(figsize=(10, 5))
+                QuickSort.visualize_quicksort(log)
+                plt.show()
+                show_log_quicksort(log)
             elif sort_method == 'textsort/radixSort':
-                tests.run_Radix(size)
+                sorter = RadixSort.RadixSort()
+                sorter.words = ["мама", "мыло", "рама", "арбуз", "осень", "яблоко", "игра"]
+                sorter.sort()
+                RadixSort.visualize_radix_sort(sorter.log)
+                show_log_radix_sort(sorter.log)
             elif sort_method == 'textsort/selectSort':
-                tests.run_Selection(size)
+                sorter = SelectionSort.SelectionSort()
+                sorter.words = ["мама", "мыло", "рама", "арбуз", "осень", "яблоко", "игра"]
+                sorter.sort()
+                SelectionSort.visualize_selection_sort(sorter.log)
+                show_log_selection_sort(sorter.log)
             elif sort_method == 'externalsort/NaturalMergeSort':
-                from ExternalSort.NaturalSort import NaturalMergeSort
-                NaturalMergeSort(self.filepath, key, delay)
+                sorter = NaturalMergeSort('test.csv', 0, 0)
+                show_log_natural_merge_sort(sorter.log)
             else:
                 print("Неверный метод сортировки.")
-
-            plt.ioff()
-            plt.show()
 
         except ValueError:
             print("Пожалуйста, введите корректное число шагов и количество данных.")

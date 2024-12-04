@@ -1,36 +1,28 @@
-from Visulizer.visual import *
-import keyboard
+import matplotlib.pyplot as plt
 
 
-def bubble_sort(arr, step):
-    check = True
-    step_f = 0
+def bubble_sort(arr):
     n = len(arr)
-
-    comparisons_log = []
-    swaps_log = []
+    log = []  # Лог для хранения шагов сортировки
 
     for i in range(n):
         for j in range(0, n - i - 1):
-            comparisons_log.append((arr[j], arr[j + 1]))
-
+            # Сохраняем текущее состояние массива
+            log.append((arr[:], j, j + 1))
             if arr[j] > arr[j + 1]:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                swaps_log.append((j, j + 1))
+                log.append((arr[:], j, j + 1))  # Логируем после обмена
 
-            if check and step == step_f:
-                visualize(arr, j, j + 1)
-                step_f = 0
+    return arr, log
 
-            if keyboard.is_pressed('esc'):
-                check = False
 
-            step_f += 1
+def visualize_bubble_sort(log):
+    for state, i, j in log:
+        plt.bar(range(len(state)), state, color=["red" if x == i or x == j else "blue" for x in range(len(state))])
+        plt.pause(0.3)
+        plt.clf()
 
-    visualize(arr)  # Final visualization after sorting
-    show_logs(comparisons_log, swaps_log)
 
-    return arr
 
 
 

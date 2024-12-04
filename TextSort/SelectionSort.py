@@ -1,44 +1,28 @@
 from tabnanny import check
 
 from .BaseSort import BaseSort
-from utils.Timer import timer
-from Visulizer.visual import visualize_str, show_logs
-import keyboard
+import matplotlib.pyplot as plt
 
 
 class SelectionSort(BaseSort):
+    def __init__(self):
+        super().__init__()
+        self.log = []  # Лог для записи шагов сортировки
 
-    @timer
     def sort(self):
         n = len(self.words)
-        comparisons_log = []  # Лог сравнений
-        swaps_log = []  # Лог перестановок
-        check = True  # Флаг для отображения шагов
 
         for i in range(n):
             min_idx = i
             for j in range(i + 1, n):
-                # Лог сравнения
-                comparisons_log.append((self.words[j], self.words[min_idx]))
+                self.log.append((self.words[:], i, min_idx, j))  # Логируем сравнение
                 if self.words[j] < self.words[min_idx]:
                     min_idx = j
+                    self.log.append((self.words[:], i, min_idx, j))  # Логируем выбор нового минимального элемента
 
-            # Лог перестановки, если найден элемент меньше текущего
             if min_idx != i:
-                swaps_log.append((i, min_idx))
                 self.words[i], self.words[min_idx] = self.words[min_idx], self.words[i]
-
-            # Визуализация текущего состояния
-        #     if check:
-        #         visualize_str(self.words)
-        #     if keyboard.is_pressed('esc'):
-        #         check = False
-        #
-        # # Финальная визуализация
-        # visualize_str(self.words)
-
-        # Передача логов в функцию вывода
-        show_logs(comparisons_log, swaps_log)
+                self.log.append((self.words[:], i, min_idx, -1))  # Логируем обмен
 
     def count_words(self):
         for word in self.words:
@@ -46,3 +30,20 @@ class SelectionSort(BaseSort):
                 self.word_count[word] += 1
             else:
                 self.word_count[word] = 1
+
+
+def visualize_selection_sort(log):
+    for state, i, min_idx, j in log:
+        colors = [
+            "green" if x == i else
+            "red" if x == min_idx else
+            "purple" if x == j else
+            "blue"
+            for x in range(len(state))
+        ]
+        plt.bar(range(len(state)), [len(word) for word in state], color=colors)
+        plt.xticks(range(len(state)), state, rotation=90)  # Подписи на оси X
+        plt.title(f"Step: Comparing '{state[j]}' and min '{state[min_idx]}'")
+        plt.pause(0.5)
+        plt.clf()
+

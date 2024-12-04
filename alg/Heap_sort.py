@@ -1,59 +1,56 @@
-from Visulizer.visual import *
-import keyboard
 
 
-def heapify(arr, n, i, comparisons_log, swaps_log, step, step_f):
+import matplotlib.pyplot as plt
+
+
+def heapify(arr, n, i, log):
     largest = i
     left = 2 * i + 1
     right = 2 * i + 2
 
-    if left < n:
-        comparisons_log.append((arr[largest], arr[left]))
-        if arr[left] > arr[largest]:
-            largest = left
+    log.append((arr[:], n, i, left, right, largest))  # Логируем до сравнения
 
-    if right < n:
-        comparisons_log.append((arr[largest], arr[right]))
-        if arr[right] > arr[largest]:
-            largest = right
+    if left < n and arr[left] > arr[largest]:
+        largest = left
+
+    if right < n and arr[right] > arr[largest]:
+        largest = right
 
     if largest != i:
         arr[i], arr[largest] = arr[largest], arr[i]
-        swaps_log.append((i, largest))
+        log.append((arr[:], n, i, left, right, largest))  # Логируем после обмена
+        heapify(arr, n, largest, log)
 
-        visualize(arr, i, largest)
 
-        heapify(arr, n, largest, comparisons_log, swaps_log, step, step_f)
-
-def heap_sort(arr, step):
-    check = True
-    step_f = 0
+def heapsort(arr):
     n = len(arr)
-
-    comparisons_log = []
-    swaps_log = []
+    log = []
 
     for i in range(n // 2 - 1, -1, -1):
-        heapify(arr, n, i, comparisons_log, swaps_log, step, step_f)
+        heapify(arr, n, i, log)
 
     for i in range(n - 1, 0, -1):
-        arr[i], arr[0] = arr[0], arr[i]
-        swaps_log.append((0, i))
+        arr[i], arr[0] = arr[0], arr[i]  # Обмен корня с последним элементом
+        log.append((arr[:], n, 0, -1, -1, i))  # Логируем после обмена корня
+        heapify(arr, i, 0, log)
 
-        visualize(arr)
+    return log
 
-        heapify(arr, i, 0, comparisons_log, swaps_log, step, step_f)
 
-        if check and step == step_f:
-            visualize(arr)
-            step_f = 0
+def visualize_heapsort(log):
+    for state, n, i, left, right, largest in log:
+        colors = [
+            "red" if x == i else
+            "green" if x == largest else
+            "purple" if x == left or x == right else
+            "blue"
+            for x in range(len(state))
+        ]
+        plt.bar(range(len(state)), state, color=colors)
+        plt.pause(0.3)
+        plt.clf()
 
-        if keyboard.is_pressed('esc'):
-            check = False
 
-        step_f += 1
 
-    visualize(arr)
-    show_logs(comparisons_log, swaps_log)
 
-    return arr
+

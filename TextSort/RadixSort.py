@@ -1,51 +1,28 @@
 from .BaseSort import BaseSort
-from utils.Timer import timer
-from Visulizer.visual import visualize_str, show_logs
-import keyboard
+import matplotlib.pyplot as plt
+from math import factorial
 
 
 class RadixSort(BaseSort):
-    @timer
+    def __init__(self):
+        super().__init__()
+        self.log = []  # Лог для записи состояния корзин на каждом шаге
+
     def sort(self):
-        comparisons_log = []  # Лог сравнений
-        swaps_log = []  # Лог перестановок
-        check = True  # Флаг для отображения шагов
+        max_length = max(len(word) for word in self.words)  # Определяем максимальную длину слов
 
-        # Определяем максимальную длину слов
-        max_length = max(len(word) for word in self.words)
-
-        # Проход по всем разрядам с конца
         for i in range(max_length - 1, -1, -1):
-            buckets = [[] for _ in range(33)]  # 33 корзины для символов русского алфавита
-
-            # Распределение слов по корзинам
+            buckets = [[] for _ in range(33)]  # 33 корзины для русского алфавита
             for word in self.words:
                 char = word[i] if i < len(word) else ''
-
                 if char:
                     index = ord(char) - ord('а')
-                    comparisons_log.append((char, f"разряд {i + 1}"))  # Лог символа и разряда
-                    swaps_log.append((word, f"корзина {index}"))  # Лог перемещения слова
                     buckets[index].append(word)
                 else:
-                    comparisons_log.append((word, f"разряд {i + 1} -> пустой символ"))
-                    swaps_log.append((word, "корзина 0"))  # Лог перемещения в корзину 0
                     buckets[0].append(word)
 
-            # Сбор отсортированных данных из корзин
+            self.log.append([bucket[:] for bucket in buckets])  # Логируем состояние корзин
             self.words = [word for bucket in buckets for word in bucket]
-
-            # Визуализация текущего состояния
-        #     if check:
-        #         visualize_str(self.words)
-        #     if keyboard.is_pressed('esc'):
-        #         check = False
-        #
-        # # Финальная визуализация
-        # visualize_str(self.words)
-
-        # Передача логов в функцию вывода
-        show_logs(comparisons_log, swaps_log)
 
     def count_words(self):
         for word in self.words:
@@ -54,3 +31,48 @@ class RadixSort(BaseSort):
             else:
                 self.word_count[word] = 1
 
+
+def lexi_length(word):
+    word = list(word)
+    length = len(word)
+    lexi_length = 0
+
+    for i in range(length):
+        # Считаем, сколько символов меньше текущего символа word[i]
+        count = 0
+        for j in range(i + 1, length):
+            if word[j] < word[i]:
+                count += 1
+
+        # Добавляем количество перестановок, которые могут быть сформированы
+        lexi_length += count * factorial(length - i - 1)
+
+    return lexi_length + 1
+
+
+def visualize_radix_sort(log):
+    colors = plt.cm.tab20.colors  # Используем цветовую палитру
+
+    for step, buckets in enumerate(log):
+        plt.clf()
+        plt.title(f"Step {step + 1}: Distribution by Buckets")
+        all_words = []
+        all_colors = []
+
+        for idx, bucket in enumerate(buckets):
+            all_words.extend(bucket)
+            all_colors.extend([colors[idx % len(colors)]] * len(bucket))
+
+        plt.bar(range(len(all_words)), [lexi_length(word) for word in all_words], color=all_colors)
+        plt.xticks(range(len(all_words)), all_words, rotation=90)
+        plt.ylabel("Word Length")
+        plt.xlabel("Words")
+        plt.pause(1)
+
+    plt.show()
+
+# sorter = RadixSort()
+# sorter.words = ["мама", "мыло", "рама", "арбуз", "осень", "яблоко", "игра"]
+# sorter.sort()
+# print("Отсортированные слова:", sorter.words)
+# visualize_radix_sort(sorter.log)
